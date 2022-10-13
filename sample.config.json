@@ -1,0 +1,56 @@
+{
+    "groups": [
+        {
+            "key": "additional_settings",
+            "group": "",
+            "name": "Additional Settings",
+            "desc": "Some additional cool stuff :)",
+            "kind": "group"
+        },
+        {
+            "key": "cat_settings",
+            "group": "additional_settings",
+            "name": "Cat Settings",
+            "desc": "Settings reffered to your stupid cat",
+            "kind": "group"
+        },
+        {
+            "key": "another_cool_settings",
+            "group": "",
+            "name": "AAA",
+            "desc": "AAA",
+            "kind": "group"
+        }
+    ],
+
+    "options": [
+        {
+            "key": "MAKE_ME_HAPPY",
+            "group": "",
+            "name": "make me happy",
+            "desc": "This option makes you happy",
+            "kind": "bool"
+        },
+        {
+            "key": "GIVE_ME_CAT",
+            "group": "cat_settings",
+            "name": "make me cat owner",
+            "desc": "This option gives you a cat",
+            "kind": "bool"
+        },
+        {
+            "key": "MY_CAT_TYPE",
+            "group": "cat_settings",
+            "name": "Cat Type",
+            "desc": "Cat type. If <custom>, then you must specify in option MY_CAT_CUSTOM_TYPE",
+            "kind": "string_type"
+        },
+        {
+            "key": "MY_CAT_CUSTOM_TYPE",
+            "group": "cat_settings",
+            "name": "Custom Cat Type",
+            "desc": "It won't work if MY_CAT_TYPE != custom",
+            "kind": "string"
+        }
+    ]
+}
