@@ -43,14 +43,14 @@
             "group": "cat_settings",
             "name": "Cat Type",
             "desc": "Cat type. If <custom>, then you must specify in option MY_CAT_CUSTOM_TYPE",
-            "kind": "string_type"
+            "kind": "bool"
         },
         {
             "key": "MY_CAT_CUSTOM_TYPE",
             "group": "cat_settings",
             "name": "Custom Cat Type",
             "desc": "It won't work if MY_CAT_TYPE != custom",
-            "kind": "string"
+            "kind": "bool"
         }
     ]
 }
