@@ -9,6 +9,7 @@ pub struct InputManager {
 
 impl InputManager {
     pub fn new() -> InputManager {
+        let a = 44;
         return InputManager {
             event: Event::Key(KeyCode::Char('f').into())
         };
@@ -18,7 +19,7 @@ impl InputManager {
         self.event = crossterm::event::read().expect("error");
 
 //        if event == Event::Key(KeyCode::Char('c').into()) {
-//
+//          <summary></summary>
 //        }
     }
 
