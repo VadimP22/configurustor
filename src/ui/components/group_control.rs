@@ -44,7 +44,8 @@ impl UiComponent for GroupControl {
 impl Control for GroupControl {
     fn on_input(&mut self, input_event: InputEvent) {
         if self.is_selected {
-            if matches!(input_event.input_event_type, InputEventType::In) {
+            if matches!(input_event.input_event_type, InputEventType::In) ||
+               matches!(input_event.input_event_type, InputEventType::Activate) {
                 self.is_active = true;
             }
         }
@@ -74,6 +75,10 @@ impl GroupControl {
             key: key.to_string(),
             text_component
         }
+    }
+
+    pub fn deactivate(&mut self) {
+        self.is_active = false;
     }
 
     fn process(&mut self) {

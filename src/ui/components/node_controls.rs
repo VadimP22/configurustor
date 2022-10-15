@@ -1,6 +1,6 @@
 use crossterm::{execute, style::{SetForegroundColor, Color, Print}, cursor};
 
-use crate::{ui::{ui_component_trait::UiComponent, control_trait::Control, ui_event::UiEvent, ui_event_type_enum::UiEventType}, input::input_event::InputEvent};
+use crate::{ui::{ui_component_trait::UiComponent, control_trait::Control, ui_event::UiEvent, ui_event_type_enum::UiEventType}, input::{input_event::InputEvent, input_event_type_enum::InputEventType}};
 
 use super::{bool_control::BoolControl, group_control::GroupControl, box_component::BoxComponent, text_component::TextComponent};
 
@@ -27,6 +27,7 @@ impl UiComponent for NodeControls {
         self.title_box.draw(stdout);
         self.draw_t_symbols(stdout);
         self.title_text.draw(stdout);
+        self.draw_separator(stdout);
 
         for group_control in &mut self.group_controls {
             group_control.draw(stdout);
@@ -44,6 +45,7 @@ impl UiComponent for NodeControls {
             self.title_box.smart_draw(stdout);
             self.draw_t_symbols(stdout);
             self.title_text.smart_draw(stdout);
+            self.draw_separator(stdout);
 
             for group_control in &mut self.group_controls {
                 group_control.smart_draw(stdout);
@@ -62,7 +64,7 @@ impl UiComponent for NodeControls {
     }
 
     fn get_height(&mut self) -> u16 {
-        return return self.box_component.get_height();
+        return self.box_component.get_height();
     }
 
     fn set_position(&mut self, x: u16, y: u16) {
@@ -88,7 +90,7 @@ impl UiComponent for NodeControls {
     }
 
     fn set_color(&mut self, color: crossterm::style::Color) {
-        self.have_changes_to_draw = true;
+        panic!("You can't set color of NodeControls!");
     }
 }
 
@@ -125,7 +127,38 @@ impl NodeControls {
     }
 
     pub fn on_input(&mut self, input_event: InputEvent) {
-        // do something
+
+        match input_event.input_event_type {
+            InputEventType::Next => {
+                self.selected_index += 1;
+                if self.selected_index >= (self.group_controls.len() + self.bool_controls.len()) {
+                    self.selected_index = 0;
+                }
+            },
+
+            InputEventType::Prev => {
+                if self.selected_index == 0 {
+                    self.selected_index = self.group_controls.len() + self.bool_controls.len();
+                }
+                self.selected_index -= 1;
+            },
+
+            InputEventType::Activate => {
+                if self.selected_index < self.group_controls.len() {
+                    return;
+                }
+                let index = self.selected_index - self.group_controls.len();
+                self.bool_controls.get_mut(index).expect("error").on_input(input_event);
+            },
+
+            InputEventType::In => {
+                if self.selected_index >= self.group_controls.len() {
+                    return;
+                }
+                self.group_controls.get_mut(self.selected_index).expect("error").on_input(input_event);
+            }
+            _ => {}
+        }
         self.have_changes_to_draw = true;
     }
 
@@ -150,7 +183,7 @@ impl NodeControls {
         for j in 0..self.bool_controls.len() {
             let index = j + self.bool_controls.len();
             let bool_control = self.bool_controls.get_mut(j).expect("error");
-            if self.selected_index == index {
+            if self.selected_index == index - 1 {
                 bool_control.select();
             } else {
                 bool_control.deselect();
@@ -181,6 +214,28 @@ impl NodeControls {
 
     fn calculate_text_height(&mut self) -> u16 {
         return (self.group_controls.len() + self.bool_controls.len() + 1) as u16;
+    }
+
+    fn draw_separator(&mut self, stdout: &mut std::io::Stdout) {
+        for i in 0..self.get_width() {
+            execute!(
+                stdout,
+                SetForegroundColor(Color::DarkGrey),
+                cursor::MoveTo(self.x + i, 3 + self.y + self.group_controls.len() as u16),
+                Print('─'),
+                cursor::Hide
+            ).expect("error");
+        }
+
+        execute!(
+                stdout,
+                SetForegroundColor(Color::DarkGrey),
+                cursor::MoveTo(self.x, 3 + self.y + self.group_controls.len() as u16),
+                Print('├'),
+                cursor::MoveTo(self.x + self.get_width() - 1, 3 + self.y + self.group_controls.len() as u16),
+                Print('┤'),
+                cursor::Hide
+        ).expect("error");
     }
 
     fn draw_t_symbols(&mut self, stdout: &mut std::io::Stdout) {

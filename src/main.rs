@@ -28,8 +28,11 @@ fn main() {
     ).expect("error");
 
     loop {
-        input_manager.read_crossterm_event();
         node_controls.smart_draw(&mut stdo);
+
+        input_manager.read_crossterm_event();
+
+        node_controls.on_input(input_manager.to_input_event());
     }
 
 
