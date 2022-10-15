@@ -1,6 +1,6 @@
 use crossterm::{execute, style::{SetForegroundColor, Color, Print}, cursor};
 
-use crate::{ui::{ui_component_trait::UiComponent, control_trait::Control, ui_event::UiEvent, ui_event_type_enum::UiEventType}, input::{input_event::InputEvent, input_event_type_enum::InputEventType}};
+use crate::{ui::{ui_component_trait::UiComponent, control_trait::Control, ui_event::UiEvent, ui_event_type_enum::UiEventType}, input::{input_event::InputEvent, input_event_type_enum::InputEventType}, exit};
 
 use super::{bool_control::BoolControl, group_control::GroupControl, box_component::BoxComponent, text_component::TextComponent};
 
@@ -17,7 +17,9 @@ pub struct NodeControls {
     box_component: BoxComponent,
 
     title_box: BoxComponent,
-    title_text: TextComponent
+    title_text: TextComponent,
+
+    ui_event: UiEvent
 }
 
 impl UiComponent for NodeControls {
@@ -110,7 +112,8 @@ impl NodeControls {
             bool_controls: Vec::new(),
             box_component: BoxComponent::default(x, y, title.len() as u16 + 2, 3),
             title_box: BoxComponent::default(x, y, title.len() as u16 + 2, 3),
-            title_text
+            title_text,
+            ui_event: UiEvent::no_event()
         };
     }
 
@@ -148,26 +151,36 @@ impl NodeControls {
                     return;
                 }
                 let index = self.selected_index - self.group_controls.len();
-                self.bool_controls.get_mut(index).expect("error").on_input(input_event);
+                let selected_bool_control = self.bool_controls.get_mut(index).expect("error");
+
+                selected_bool_control.on_input(input_event);
+                self.ui_event = UiEvent::set(selected_bool_control.key.clone(), selected_bool_control.is_true);
             },
 
             InputEventType::In => {
                 if self.selected_index >= self.group_controls.len() {
                     return;
                 }
-                self.group_controls.get_mut(self.selected_index).expect("error").on_input(input_event);
+                let selected_group_control = self.group_controls.get_mut(self.selected_index).expect("error");
+
+                selected_group_control.on_input(input_event);
+                self.ui_event = UiEvent::navigate(selected_group_control.key.clone());
+            },
+
+            InputEventType::Key => {
+                if input_event.key == 'q' {
+                    exit();
+                }
             }
             _ => {}
         }
         self.have_changes_to_draw = true;
     }
 
-    pub fn get_ui_event() -> UiEvent {
-        return UiEvent {
-            event_type: UiEventType::NoEvent,
-            key: "key".to_string(),
-            new_value: false,
-        }
+    pub fn get_ui_event(&mut self) -> UiEvent {
+        let event = self.ui_event.clone();
+        self.ui_event = UiEvent::no_event();
+        return event;
     }
 
     fn process(&mut self) {

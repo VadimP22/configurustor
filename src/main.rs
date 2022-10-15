@@ -1,12 +1,22 @@
 use std::{io::stdout};
 
 use input::input_manager::InputManager;
-use ui::{ui_component_trait::UiComponent, components::{node_controls::NodeControls, box_component::BoxComponent}};
-use crossterm::{execute, terminal};
+use ui::{ui_component_trait::UiComponent, components::{node_controls::NodeControls}};
+use crossterm::{execute, terminal::{self, enable_raw_mode, disable_raw_mode}, cursor, style};
+
 
 mod ui;
 mod input;
 mod store;
+
+
+fn exit() {
+    disable_raw_mode().expect("error");
+    execute!(stdout(), style::ResetColor, cursor::Show, terminal::LeaveAlternateScreen, terminal::Clear(terminal::ClearType::All)).expect("error");
+
+    std::process::exit(0);
+}
+
 
 fn main() {
     let mut stdo = stdout();
@@ -22,6 +32,8 @@ fn main() {
     node_controls.add_bool_control("key6", "Yet another boolean control...");
     node_controls.add_bool_control("key7", "Make me happy :)");
 
+    enable_raw_mode().expect("error");
+
     execute!(
         stdo,
         terminal::Clear(terminal::ClearType::All)
@@ -34,6 +46,4 @@ fn main() {
 
         node_controls.on_input(input_manager.to_input_event());
     }
-
-
 }

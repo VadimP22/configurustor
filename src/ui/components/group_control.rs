@@ -8,7 +8,7 @@ use super::text_component::TextComponent;
 pub struct GroupControl {
     is_selected: bool,
     is_active: bool,
-    key: String,
+    pub key: String,
     text_component: TextComponent
 
 }

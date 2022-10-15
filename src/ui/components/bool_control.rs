@@ -8,8 +8,8 @@ use super::text_component::TextComponent;
 #[derive(Debug)]
 pub struct BoolControl {
     is_selected: bool,
-    is_true: bool,
-    key: String,
+    pub is_true: bool,
+    pub key: String,
     checkbox_component: TextComponent,
     text_component: TextComponent
 }
