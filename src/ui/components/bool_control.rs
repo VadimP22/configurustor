@@ -1,9 +1,14 @@
-use crossterm::{style::Color, event::KeyCode};
+use crossterm::{event::KeyCode, style::Color};
 
-use crate::{ui::{control_trait::Control, ui_component_trait::UiComponent}, input::{input_event::InputEvent, input_event_type_enum::InputEventType}};
+use crate::{
+    input::{input_event::InputEvent, input_event_type_enum::InputEventType},
+    ui::{
+        control_component::ControlComponent, control_trait::Control,
+        ui_component_trait::UiComponent,
+    },
+};
 
 use super::text_component::TextComponent;
-
 
 #[derive(Debug)]
 pub struct BoolControl {
@@ -11,9 +16,10 @@ pub struct BoolControl {
     pub is_true: bool,
     pub key: String,
     checkbox_component: TextComponent,
-    text_component: TextComponent
+    text_component: TextComponent,
 }
 
+impl ControlComponent for BoolControl {}
 
 impl UiComponent for BoolControl {
     fn draw(&mut self, stdout: &mut std::io::Stdout) {
@@ -45,7 +51,6 @@ impl UiComponent for BoolControl {
     }
 }
 
-
 impl Control for BoolControl {
     fn on_input(&mut self, input_event: InputEvent) {
         if self.is_selected && matches!(input_event.input_event_type, InputEventType::Activate) {
@@ -67,12 +72,19 @@ impl Control for BoolControl {
         self.is_selected = false;
         self.process();
     }
+
+    fn is_selectable(&mut self) -> bool {
+        return true;
+    }
+
+    fn get_state(&mut self) -> (String, String) {
+        return (self.key.clone(), self.is_true.to_string());
+    }
 }
 
-
 impl BoolControl {
-    pub fn default(key: &str, title: &str, x: u16, y: u16) -> BoolControl {
-        let mut checkbox_component = TextComponent::default("[ ]", x, y);
+    pub fn default(key: String, title: String, x: u16, y: u16) -> BoolControl {
+        let mut checkbox_component = TextComponent::default("[ ]".to_string(), x, y);
         let mut text_component = TextComponent::default(title, x + 4, y);
 
         checkbox_component.set_color(Color::DarkGrey);
@@ -81,9 +93,9 @@ impl BoolControl {
         return BoolControl {
             is_selected: false,
             is_true: false,
-            key: key.to_string(),
+            key,
             checkbox_component,
-            text_component
+            text_component,
         };
     }
 

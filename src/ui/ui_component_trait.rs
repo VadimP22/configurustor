@@ -2,7 +2,6 @@ use std::io::Stdout;
 
 use crossterm::style::Color;
 
-
 pub trait UiComponent {
     fn draw(&mut self, stdout: &mut Stdout);
     fn smart_draw(&mut self, stdout: &mut Stdout);

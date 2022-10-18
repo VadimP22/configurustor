@@ -1,9 +1,11 @@
 use std::io::Stdout;
 
-use crossterm::{execute, terminal, cursor, style::{Color, SetForegroundColor, Print}};
+use crossterm::{
+    cursor, execute,
+    style::{Color, Print, SetForegroundColor},
+};
 
 use crate::ui::ui_component_trait::UiComponent;
-
 
 #[derive(Debug)]
 pub struct TextComponent {
@@ -11,9 +13,8 @@ pub struct TextComponent {
     x: u16,
     y: u16,
     text: String,
-    have_changes_to_draw: bool
+    have_changes_to_draw: bool,
 }
-
 
 impl UiComponent for TextComponent {
     fn draw(&mut self, stdout: &mut Stdout) {
@@ -23,7 +24,8 @@ impl UiComponent for TextComponent {
             cursor::MoveTo(self.x, self.y),
             Print(self.text.to_owned()),
             cursor::Hide
-        ).expect("error");
+        )
+        .expect("error");
     }
 
     fn smart_draw(&mut self, stdout: &mut Stdout) {
@@ -55,15 +57,14 @@ impl UiComponent for TextComponent {
     }
 }
 
-
 impl TextComponent {
-    pub fn default(text: &str, x: u16, y: u16) -> TextComponent {
+    pub fn default(text: String, x: u16, y: u16) -> TextComponent {
         return TextComponent {
             color: Color::Cyan,
-            text: text.to_string(),
+            text,
             x,
             y,
-            have_changes_to_draw: true
+            have_changes_to_draw: true,
         };
     }
 

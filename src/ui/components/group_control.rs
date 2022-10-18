@@ -1,6 +1,9 @@
 use crossterm::style::Color;
 
-use crate::{ui::{ui_component_trait::UiComponent, control_trait::Control}, input::{input_event::InputEvent, input_event_type_enum::InputEventType}};
+use crate::{
+    input::{input_event::InputEvent, input_event_type_enum::InputEventType},
+    ui::{control_trait::Control, ui_component_trait::UiComponent},
+};
 
 use super::text_component::TextComponent;
 
@@ -9,10 +12,8 @@ pub struct GroupControl {
     is_selected: bool,
     is_active: bool,
     pub key: String,
-    text_component: TextComponent
-
+    text_component: TextComponent,
 }
-
 
 impl UiComponent for GroupControl {
     fn draw(&mut self, stdout: &mut std::io::Stdout) {
@@ -40,12 +41,12 @@ impl UiComponent for GroupControl {
     }
 }
 
-
 impl Control for GroupControl {
     fn on_input(&mut self, input_event: InputEvent) {
         if self.is_selected {
-            if matches!(input_event.input_event_type, InputEventType::In) ||
-               matches!(input_event.input_event_type, InputEventType::Activate) {
+            if matches!(input_event.input_event_type, InputEventType::In)
+                || matches!(input_event.input_event_type, InputEventType::Activate)
+            {
                 self.is_active = true;
             }
         }
@@ -61,11 +62,18 @@ impl Control for GroupControl {
         self.is_selected = false;
         self.process();
     }
+
+    fn is_selectable(&mut self) -> bool {
+        return true;
+    }
+
+    fn get_state(&mut self) -> (String, String) {
+        return ("group".to_string(), "group".to_string());
+    }
 }
 
-
 impl GroupControl {
-    pub fn default(key: &str, title: &str, x: u16, y: u16) -> GroupControl {
+    pub fn default(key: String, title: String, x: u16, y: u16) -> GroupControl {
         let mut text_component = TextComponent::default(title, x, y);
         text_component.set_color(Color::DarkGrey);
 
@@ -73,8 +81,8 @@ impl GroupControl {
             is_selected: false,
             is_active: false,
             key: key.to_string(),
-            text_component
-        }
+            text_component,
+        };
     }
 
     pub fn deactivate(&mut self) {
